@@ -40,6 +40,7 @@ localparam  [31:0]  CORE_MAGIC           = 32'h53594944;  // SYID
 reg                             up_wack = 'd0;
 reg   [31:0]                    up_rdata_s = 'd0;
 reg                             up_rack_s = 'd0;
+reg                             up_rreq_s_d = 'd0;
 reg   [31:0]                    up_scratch = 'd0;
 
 wire                            up_clk;
@@ -90,14 +91,19 @@ i_up_axi (
   .up_rdata (up_rdata_s),
   .up_rack (up_rack_s));
 
+//delaying data read with 1 tck to compensate for the ROM latency
+always @(posedge up_clk) begin
+  up_rreq_s_d <= up_rreq_s;
+end
+
 //axi registers read
 always @(posedge up_clk) begin
   if (up_rstn == 1'b0) begin
     up_rack_s <= 'd0;
     up_rdata_s <= 'd0;
   end else begin
-    up_rack_s <= up_rreq_s;
-    if (up_rreq_s == 1'b1) begin
+    up_rack_s <= up_rreq_s_d;
+    if (up_rreq_s_d == 1'b1) begin
       case (up_raddr_s)
         8'h00: up_rdata_s <= CORE_VERSION;
         8'h01: up_rdata_s <= 0;

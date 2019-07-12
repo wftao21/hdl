@@ -5,16 +5,18 @@ module sysid_rom#(
   parameter ROM_ADDR_BITS = 6,
   parameter PATH_TO_FILE = "path_to_mem_init_file" )(
 
-  output  [ROM_WIDTH-1:0]           rom_data,
-  input   [ROM_ADDR_BITS-1:0]       rom_addr
-);
+  input                             clk,
+  input        [ROM_ADDR_BITS-1:0]  rom_addr,
+  output  reg  [ROM_WIDTH-1:0]      rom_data);
 
-(* rom_style = "distributed" *) reg [ROM_WIDTH-1:0] lut_rom [(2**ROM_ADDR_BITS)-1:0];
+reg [ROM_WIDTH-1:0] lut_rom [(2**ROM_ADDR_BITS)-1:0];
+
 initial begin
   $readmemh(PATH_TO_FILE, lut_rom, 0, (2**ROM_ADDR_BITS)-1);
 end
 
-assign rom_data = lut_rom[rom_addr];
+always @(posedge clk) begin
+  rom_data = lut_rom[rom_addr];
+end
 
 endmodule
-
