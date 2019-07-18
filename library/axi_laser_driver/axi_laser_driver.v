@@ -139,7 +139,7 @@ module axi_laser_driver #(
     .PULSE_PERIOD (PULSE_PERIOD))
   i_pwm_regmap (
     .ext_clk (ext_clk),
-    .clk (clk),
+    .clk_out (clk),
     .pulse_gen_resetn (pulse_gen_resetn),
     .pulse_width (pulse_width_s),
     .pulse_period (pulse_period_s),
