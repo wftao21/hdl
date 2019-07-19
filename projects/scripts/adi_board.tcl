@@ -868,27 +868,28 @@ proc sysid_gen_sys_init_file {custom_string} {
   # set version
   set comh_ver_hex "00000001"
 
-  # getting project name hex
-  set projname_hex [stringtohex [current_project] 32]
+
+  # project name
+  set projname_hex [stringtohex [lindex [split [current_project] _] 0] 32]
 
   # board name
-  if {[catch {current_board} boardname_string]} {
-    if [expr [string match *ERROR* $boardname_string] == 1] {
-      set boardname_string 0
-    }
-  }
-  set boardname_hex [stringtohex $boardname_string 32]
+  set boardname_hex [stringtohex [lindex [split [current_project] _] 1] 32]
   
   # custom string
   set custom_hex [stringtohex $custom_string 64]
 
   # pr offset
-  set pr_offset "deadbeef"
+  # not used
+  set pr_offset "00000000"
 
   # init - generate header 
   set comh_hex {}
   append comh_hex $comh_ver_hex
 
+  # offset for internal use area
+  set offset $table_size
+  append comh_hex [format %08s [format %0.2x $offset]]
+  
   # offset for projname_hex
   set offset [expr $table_size + $verh_size]
   append comh_hex [format %08s [format %0.2x $offset]]
